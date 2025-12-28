@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        American Benefits Now    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="ajax/libs/gsap/3.6.0/gsap.min.js"></script>
+    <link rel="stylesheet" href="ajax/libs/animate_css/4.1.1/animate.min.css" />
+</head>
+<body>
+    <a href="" class="hidden" id="rtRef"></a>
+    <div id="mainContainer" class="mx-auto md:pt-4 pt-1 px-4 md:px-0 max-w-5xl text-center container">
+        <h1 class="font-black text-center break-normal text-2xl md:text-3xl mx-auto my-5">
+            Americans on Medicare Could Qualify for a Better Medicare Advantage Insurance plan!
+        </h1>
+        <img class="mx-auto my-2 w-full md:w-3/4" src="apply-here/assets/images/hero.jpg" />
+        <p class="my-4 md:text-xl" style="text-align: left;">
+            Looking for a way to reduce your costs for Medicare? A Medicare Advantage plan is an option. A Medicare
+            Advantage plan provides all of the benefits of Original Medicare coverage but often at a lower cost.
+            Everyone with Medicare Part A and B has access to a Medicare Advantage plan.
+        </p>
+        <p class="my-4 md:text-xl" style="text-align: left;">
+            Our agents live and work in your community, so they can help you get the best care and coverage in your
+            area.
+        </p>
+        <p class="my-4 md:text-xl" style="text-align: left;">
+            Insurance companies pay us, so our service is free for you. We make the same commission regardless of the
+            plan you choose.
+        </p>
+        <p class="my-4 md:text-xl" style="text-align: left;">
+            Answer the questions below to see if you're eligible for a medicare advantage plan.
+        </p>
+        <div>
+            <div id="display1" class="md:mt-8 mt-4">
+                <h3 class="font-bold text-center md:text-4xl text-3xl my-8">
+                    What is your age range?
+                </h3>
+                <div class="grid grid-cols-1  gap-6">
+                    <button id="btn-1"
+                        class="flex justify-center bg-green-500 hover:bg-green-500 tracking-wide text-white font-bold rounded-2xl w-3/4 mx-auto border-b-2 border-green-500 uppercase shadow-md md:py-6 py-4 md:text-2xl px-6 items-center">
+                        64 - 75
+                    </button>
+                    <button id="btn-2"
+                        class="flex justify-center bg-green-500 hover:bg-green-500  tracking-wide text-white font-bold rounded-2xl w-3/4 mx-auto border-b-2 border-green-500 uppercase shadow-md md:py-6 py-4 md:text-2xl px-6 items-center">
+                        76 and older
+                    </button>
+                </div>
+            </div>
+            <div id="display2" class="md:mt-8 mt-4 hidden">
+                <h3 class="font-bold text-center md:text-4xl text-3xl my-8">
+                    Are You On Medicare or Medicaid?
+                </h3>
+                <div class="grid grid-cols-1 gap-6">
+                    <button id="btn-yes"
+                        class="flex justify-center bg-green-500 hover:bg-green-500  tracking-wide text-white font-bold rounded-2xl w-3/4 mx-auto border-b-2 border-green-500 uppercase shadow-md md:py-6 py-4 md:text-2xl px-6 items-center cta_btn btn_2">
+                        Yes
+                    </button>
+                    <button id="btn-no"
+                        class="flex justify-center bg-green-500 hover:bg-green-500  tracking-wide text-white font-bold rounded-2xl w-3/4 mx-auto border-b-2 border-green-500 uppercase shadow-md md:py-6 py-4 md:text-2xl px-6 items-center cta_btn btn_2">
+                        No
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="display4" class="hidden hidden mx-auto md:pt-4 pt-1 px-4 md:px-0 max-w-5xl container ">
+        <div class="p-6 border-t-2 border-blue-500 mt-4 bg-gray-300 text-center shadow-xl">
+            <h3 class="text-xl md:text-2xl font-bold text-green-500 mb-4">
+                Congratulations!
+            </h3>
+            <p class="text-xl md:text-2xl font-bold mb-4">
+                You Pre-Qualify For <span class="text-red-600">The Healthy Allowance Card!</span>
+            </p>
+            <p class="">
+                Tap below to speak to an official agent to claim your benefit card!
+            </p>
+            <a href="tel:+18444870575">
+                <button
+                    class="capitalize font-bold  bg-green-500 animate__animated animate__pulse animate__infinite  text-white my-4 p-5  shadow-2xl md:text-2xl text-base">
+                    Click to Call
+                    +1 (844) 487-0575                </button>
+            </a>
+            <p class="font-bold mb-4">
+                We Have Reserved Your Spot.
+            </p>
+            <p class="mb-4">
+                Due to high call volume, your official agent is only waiting for <span class="text-bold">3
+                    minutes...</span> then your spot will not be held and will be given to the next caller.
+            </p>
+            <div id="countdown" class="border-2 border-red-500 border-dashed w-max px-6 py-2 mx-auto">
+                <span class="text-red-500" id="time"></span>
+            </div>
+        </div>
+    </div>
+    <section id="progress-container" class="hidden flex justify-center items-center flex-col mt-10 mb-10 w-50">
+        <div id="progress-bar" class="flex justify-center items-center flex-col ">
+            <h4 id="progress-text-1" class="progress-bar__text hidden text-3xl mb-5">Reviewing your answers...</h4>
+            <h4 id="progress-text-2" class="progress-bar__text hidden text-3xl mb-5">Matching with best options...</h4>
+            <h4 id="progress-text-3" class="progress-bar__text hidden text-3xl mb-5">Confirming eligibility...</h4>
+            <div class="progress-bar__container"
+                style="width: 50%; height: 2rem; border-radius: 2rem; position: relative; overflow: hidden; transition: all 0.5s; will-change: transform; box-shadow: 0 0 5px #ffc438;">
+                <div class="progress-bar"
+                    style="position: absolute; height: 100%; width: 100%; background-color: #ffc438; top:0; bottom: 0; left: -100%; border-radius: inherit; display: flex; justify-content: center; align-items:center; color: white; font-family: sans-serif;">
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer mt-12 footer-center p-4 mt-12 mb-2 text-center max-w-6xl mx-auto text-xs">
+        <p class="mt-6 text-sm text-gray-600">Health Insurance Provider: Agency Pro LLC DBA Elite Insurance Agency Solutions</p>
+        <div class="grid grid-flow-col gap-3 md:w-1/3 mx-auto my-8">
+            <a class="link link-hover" href="terms.html"> Terms & Conditions </a>
+            <p class="text-blue-500">|</p>
+            <a class="link link-hover" href="privacy.html"> Privacy Policy </a>
+            <p class="text-blue-500">|</p>
+            <a class="link link-hover" href="privacy.html#caresidents"> CCPA </a>
+        </div>
+        <div class="mt-8">
+            <p>Copyright© 2024 - All right reserved
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const setRtClickId = () => {
+            var anchorTag = document.getElementById("rtRef");
+            var anchorUrl = new URL(anchorTag.href);
+            var anchorParams = new URLSearchParams(anchorUrl.search);
+            // Assume your window location is something like /path?param2=value2
+            var windowUrl = new URL(window.location.href);
+            var windowParams = new URLSearchParams(windowUrl.search);
+            windowUrl.searchParams.set('age', '64');
+            window.history.pushState({
+                path: windowUrl.toString()
+            }, '', windowUrl.toString());
+            // Append params from the anchor tag to the main URL's params
+            for (let pair of anchorParams.entries()) {
+                windowParams.append(pair[0], pair[1]);
+            }
+            // Set the window's location search params
+            windowUrl.search = windowParams.toString();
+            history.replaceState({}, "", windowUrl.toString());
+        }
+        const setZip = () => {
+  const newUrl = new URL(window.location.href);
+  $.getJSON("https://ipapi.co/json/", function(data) {
+    const zipCode = data.postal;
+    if (zipCode) {
+      newUrl.searchParams.set('ip_zip', zipCode);
+      window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+    }
+  });
+};
+        const loadRingba = () => {
+            var script = document.createElement("script");
+            script.src =
+                "//b-js.ringba.com/CAb49cfcb9181147da91c79a5b41b45130";
+            document.head.appendChild(script);
+        }
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0, // Scroll to the top of the window
+                behavior: 'smooth' // Smooth scroll
+            });
+        }
+        const runCountdownTimer = () => {
+            var now = new Date().getTime();
+            var countDownDate = new Date(now + 3 * 60000).getTime();
+            setInterval(function () {
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById("time").innerHTML = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+                if (distance < 0) {
+                clearInterval()
+                    document.getElementById("time").innerHTML = "EXPIRED";
+                }
+            }, 500);
+        };
+        const btn1 = document.getElementById("btn-1");
+        const btn2 = document.getElementById("btn-2");
+        const btnYes = document.getElementById("btn-yes");
+        const btnNo = document.getElementById("btn-no");
+        const mainContainer = document.getElementById("mainContainer");
+        const display1 = document.getElementById("display1");
+        const display2 = document.getElementById("display2");
+        const display4 = document.getElementById("display4");
+        // PROGRESS BAR
+        const progressContainer = document.getElementById("progress-container");
+        const progressBarContainer = document.querySelector('.progress-bar__container');
+        const progressBar = document.querySelector('.progress-bar');
+        const progressBarText = document.querySelector('.progress-bar__text');
+        const progressText1 = document.getElementById('progress-text-1');
+        const progressText2 = document.getElementById('progress-text-2');
+        const progressText3 = document.getElementById('progress-text-3');
+        const runProgress = () => {
+            const progressBarStates = [25, 50, 75, 100];
+            let time = -1000;
+            let endState = 100;
+            progressBarStates.forEach(state => {
+                let randomTime = 1000
+                setTimeout(() => {
+                    if (state == endState) {
+                        gsap.to(progressBar, {
+                            x: `${state}%`,
+                            duration: 1,
+                            backgroundColor: '#30bd51',
+                            onComplete: () => {
+                                // progressBarText.style.display = "initial";
+                                progressBarContainer.style.boxShadow = '0 0 5px #30bd51';
+                                progressContainer.style.display = "none";
+                                display4.style.display = "block"
+                            }
+                        });
+                    } else {
+                        gsap.to(progressBar, {
+                            x: `${state}%`,
+                            duration: 1,
+                        });
+                        if (state === 25) {
+                            progressText1.style.display = "block"
+                        }
+                        if (state === 50) {
+                            progressText1.style.display = "none"
+                            progressText2.style.display = "block"
+                        }
+                        if (state === 75) {
+                            progressText1.style.display = "none"
+                            progressText2.style.display = "none"
+                            progressText3.style.display = "block"
+                        }
+                    }
+                }, randomTime + time);
+                time += randomTime;
+            })
+        }
+        btn1.addEventListener("click", () => {
+            display1.style.display = "none";
+            display2.style.display = "block";
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('age', '64');
+            window.history.pushState({
+                path: newUrl.href
+            }, '', newUrl.href);
+            setZip()
+            setRtClickId();
+        });
+        btn2.addEventListener("click", () => {
+            display1.style.display = "none";
+            display2.style.display = "block";
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('age', '76');
+            window.history.pushState({
+                path: newUrl.href
+            }, '', newUrl.href);
+            setZip()
+            setRtClickId();
+        });
+        btnYes.addEventListener("click", () => {
+            display2.style.display = "none";
+            runProgress()
+            mainContainer.style.display = "none";
+            progressContainer.style.display = "block";
+            loadRingba()
+            runCountdownTimer()
+            scrollToTop()
+        });
+        btnNo.addEventListener("click", () => {
+            display2.style.display = "none";
+            display5.style.display = "block";
+        });
+    </script>
+</body>
+</html>
