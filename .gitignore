@@ -1,0 +1,11 @@
+node_modules/
+.env
+*.log
+targetNoAnswerAlertCache.json
+processedBatches.json
+processedBatchesSameBid.json
+processedBidBatches.json
+alertCache.json
+api10Cache.json
+*.lock
+.api7r2v1.lock
