@@ -10,6 +10,12 @@
  */
 export default [
   {
+    script: "clearCache.js",
+    schedule: "0 1 * * 1-6",
+    timezone: "America/New_York",
+    description: "Clear all cache JSON files — 1am EST (Mon–Sat)",
+  },
+  {
     script: "targetNoAnswer.js",
     args: ["pull"],
     schedule: "*/10 9-17 * * 1-6",
@@ -36,15 +42,15 @@ export default [
   },
   {
     script: "consecutiveCalls.js",
-    schedule: "*/5 9-17 * * 1-6",
+    schedule: "*/20 9-17 * * 1-6",
     timezone: "America/New_York",
-    description: "Consecutive calls — every 5 min, 9am–5pm EST (Mon–Sat)",
+    description: "Consecutive calls — every 20 min, 9am–5pm EST (Mon–Sat)",
   },
   {
     script: "consecutiveCallsSameBid.js",
-    schedule: "*/5 9-17 * * 1-6",
+    schedule: "*/30 9-17 * * 1-6",
     timezone: "America/New_York",
-    description: "Consecutive calls same bid — every 5 min, 9am–5pm EST (Mon–Sat)",
+    description: "Consecutive calls same bid — every 30 min, 9am–5pm EST (Mon–Sat)",
   },
   {
     script: "elitePickUp.js",

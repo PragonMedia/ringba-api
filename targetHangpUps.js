@@ -13,7 +13,17 @@ const PASSWORD = process.env.RINGBA_PASSWORD;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 const API_TOKEN = process.env.RINGBA_API_TOKEN;
 
-// FOR DUPLICATE NOTIFS~
+function getTodayEST() {
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" });
+  const parts = fmt.formatToParts(now);
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value;
+  const d = parts.find((p) => p.type === "day").value;
+  return `${y}-${m}-${d}`;
+}
+
+// FOR DUPLICATE NOTIFS (date = EST so 1am clear matches)
 const ALERT_CACHE_PATH = join(__dirname, "api10Cache.json");
 
 // Load alert cache from file or initialize
@@ -22,8 +32,7 @@ if (existsSync(ALERT_CACHE_PATH)) {
   alertCache = JSON.parse(readFileSync(ALERT_CACHE_PATH, "utf-8"));
 }
 
-// Get today's date in YYYY-MM-DD format
-const today = new Date().toISOString().split("T")[0];
+const today = getTodayEST();
 
 // Ensure structure
 if (!alertCache[today]) {

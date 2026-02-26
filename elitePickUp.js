@@ -2,11 +2,11 @@ import "dotenv/config";
 import axios from "axios";
 
 const BASE_URL = "https://api.ringba.com/v2";
-const RINGBA_ACCOUNT_ID = process.env.RINGBA_ACCOUNT_ID;
-const USERNAME = process.env.RINGBA_USERNAME;
-const PASSWORD = process.env.RINGBA_PASSWORD;
-const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
-const API_TOKEN = process.env.RINGBA_API_TOKEN;
+const RINGBA_ACCOUNT_ID = process.env.ELITE_RINGBA_ACCOUNT_ID || process.env.RINGBA_ACCOUNT_ID;
+const USERNAME = process.env.ELITE_RINGBA_USERNAME || process.env.RINGBA_USERNAME;
+const PASSWORD = process.env.ELITE_RINGBA_PASSWORD || process.env.RINGBA_PASSWORD;
+const SLACK_WEBHOOK_URL = process.env.ELITE_SLACK_WEBHOOK_URL || process.env.SLACK_WEBHOOK_URL;
+const API_TOKEN = process.env.ELITE_RINGBA_API_TOKEN || process.env.RINGBA_API_TOKEN;
 
 // ✅ Function to send a message to Slack
 async function sendSlackMessage(message) {
@@ -294,13 +294,11 @@ async function runReport() {
   }
   // reportPreviousStart
 
-  const cleanedData = extractEliteAndLast(current);
-  // console.log(cleanedData);
-
+  const cleanedData = extractEliteAndLast(current || []);
   // const previous = await getData()
   const data = [];
 
-  cleanedData.map((curr) => {
+  cleanedData.filter(Boolean).forEach((curr) => {
     const buyer = curr.buyer ? curr.buyer : "total";
     const callCount = curr.callCount;
 

@@ -2,6 +2,7 @@
  * Centralized scheduler — runs all API scripts on their configured cron schedules.
  * Start once: node scheduler.js (or pm2 start scheduler.js)
  */
+import "dotenv/config";
 import { spawn } from "child_process";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";

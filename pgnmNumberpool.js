@@ -8,8 +8,18 @@ const PASSWORD = process.env.RINGBA_PASSWORD;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 const API_TOKEN = process.env.RINGBA_API_TOKEN;
 
-// ✅ Function to send a message to Slack
+if (!SLACK_WEBHOOK_URL) {
+  console.warn("⚠️ SLACK_WEBHOOK_URL not set in .env — Slack alerts disabled.");
+}
+if (!RINGBA_ACCOUNT_ID || !API_TOKEN) {
+  console.warn("⚠️ RINGBA_ACCOUNT_ID or RINGBA_API_TOKEN not set — API calls may fail.");
+}
+
 async function sendSlackMessage(message) {
+  if (!SLACK_WEBHOOK_URL) {
+    console.warn("Slack skipped (no webhook):", message);
+    return;
+  }
   try {
     await axios.post(SLACK_WEBHOOK_URL, {
       text: message,
