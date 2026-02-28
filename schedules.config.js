@@ -42,9 +42,9 @@ export default [
   },
   {
     script: "consecutiveCalls.js",
-    schedule: "*/20 9-17 * * 1-6",
+    schedule: "*/10 9-17 * * 1-6",
     timezone: "America/New_York",
-    description: "Consecutive calls — every 20 min, 9am–5pm EST (Mon–Sat)",
+    description: "Consecutive calls — every 10 min, 9am–5pm EST (Mon–Sat)",
   },
   {
     script: "consecutiveCallsSameBid.js",
