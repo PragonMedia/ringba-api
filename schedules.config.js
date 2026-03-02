@@ -54,6 +54,12 @@ export default [
   },
   {
     script: "elitePickUp.js",
+    schedule: "30,45 9 * * 1-6",
+    timezone: "America/New_York",
+    description: "Elite pick up — 9:30am, 9:45am EST (Mon–Sat)",
+  },
+  {
+    script: "elitePickUp.js",
     schedule: "0,15,30,45 10-19 * * 1-6",
     timezone: "America/New_York",
     description: "Elite pick up — every 15 min, 10am–7pm EST (Mon–Sat)",
