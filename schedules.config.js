@@ -54,9 +54,9 @@ export default [
   },
   {
     script: "elitePickUp.js",
-    schedule: "0,15,30,45 9-17 * * 1-6",
+    schedule: "0,15,30,45 10-19 * * 1-6",
     timezone: "America/New_York",
-    description: "Elite pick up — every 15 min, 9am–5pm EST (Mon–Sat)",
+    description: "Elite pick up — every 15 min, 10am–7pm EST (Mon–Sat)",
   },
   {
     script: "campaignDropRate.js",
