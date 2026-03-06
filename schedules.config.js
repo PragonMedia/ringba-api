@@ -70,6 +70,12 @@ export default [
     timezone: "America/New_York",
     description: "Campaign drop rate — every 30 min, 9am–5pm EST (Mon–Sat)",
   },
+  {
+    script: "ringTreeDisposition.js",
+    schedule: "0,15,30,45 9-18 * * 1-6",
+    timezone: "America/New_York",
+    description: "Ring tree disposition — every 15 min, 9am–6pm EST (Mon–Sat)",
+  },
   // Add your 5 more APIs here with their schedules
   // { script: "myScript.js", schedule: "0 */2 * * *", timezone: "America/New_York", description: "Every 2 hours" },
 ];
