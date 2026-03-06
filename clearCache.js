@@ -32,6 +32,7 @@ const cacheFiles = [
   { path: resolve(__dirname, "processedBidBatches.json"), data: { date: today, batches: [] } },
   { path: resolve(__dirname, "alertCache.json"), data: { [today]: [] } },
   { path: resolve(__dirname, "api10Cache.json"), data: { [today]: [] } },
+  { path: resolve(__dirname, "ringTreeDispositionCache.json"), data: { date: today, rttNames: [] } },
 ];
 
 for (const { path: filePath, data } of cacheFiles) {
