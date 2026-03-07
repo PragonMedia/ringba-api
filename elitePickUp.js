@@ -326,9 +326,11 @@ async function runReport() {
   console.log(
     `${percentage} of calls were picked up by elite, ${noValuePercentage}% hit the floor`,
   );
-  sendSlackMessage(
-    `${percentage} of calls were picked up by elite, ${noValuePercentage}% hit the floor`,
-  );
+  if (percentage != null) {
+    sendSlackMessage(
+      `${percentage} of calls were picked up by elite, ${noValuePercentage}% hit the floor`,
+    );
+  }
 }
 
 runReport();
