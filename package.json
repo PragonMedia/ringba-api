@@ -1,0 +1,27 @@
+{
+  "name": "ringba-slack-alerts",
+  "version": "1.0.0",
+  "description": "Pull data from Ringba API and send alerts to Slack",
+  "main": "targetNoAnswer.js",
+  "type": "module",
+  "scripts": {
+    "start": "node scheduler.js",
+    "scheduler": "node scheduler.js",
+    "targetNoAnswer": "node targetNoAnswer.js",
+    "targetNoAnswer:pull": "node targetNoAnswer.js pull",
+    "targetNoAnswer:alert": "node targetNoAnswer.js alert"
+  },
+  "keywords": [
+    "ringba",
+    "slack",
+    "alerts",
+    "call-tracking"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@slack/webhook": "^7.0.2",
+    "axios": "^1.13.5",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3"
+  }
+}
