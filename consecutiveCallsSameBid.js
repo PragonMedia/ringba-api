@@ -866,10 +866,10 @@ async function runReport() {
           }
 
           const targetName = group[0].targetName;
-          const details = group
-            .map((call) => `${call.inboundPhoneNumber} / ${call.inboundCallId}`)
-            .join(" | ");
-          const alertLine = `${targetName} has dropped three consecutive calls on the same bid $${group[0].bidAmount} (${details})`;
+          const callSubBullets = group
+            .map((call) => `  - ${call.inboundPhoneNumber} / ${call.inboundCallId}`)
+            .join("\n");
+          const alertLine = `${targetName} has dropped three consecutive calls on the same bid $${group[0].bidAmount}\n${callSubBullets}`;
           console.log(alertLine);
           alerts.push(alertLine);
         }
