@@ -516,7 +516,7 @@ async function runReport() {
 
   if (alerts.length > 0) {
     const bullets = alerts.map((line) => `• ${line}`).join("\n");
-    await sendSlackMessage(`Consecutive Calls\n${bullets}`);
+    await sendSlackMessage(`*Consecutive Calls*\n${bullets}`);
   }
 }
 

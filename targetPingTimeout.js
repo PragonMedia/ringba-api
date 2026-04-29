@@ -137,7 +137,7 @@ async function fetchRingTreeDisposition() {
       const bullets = toAlert
         .map((item) => `• ${item.rttName} has 10%+ ping timeouts`)
         .join("\n");
-      const message = `Target Ping Timeout\n${bullets}`;
+      const message = `*Target Ping Timeout*\n${bullets}`;
       console.log(message);
       await sendSlackMessage(message);
 

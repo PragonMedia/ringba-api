@@ -137,7 +137,7 @@ async function fetchTargetApiFailure() {
       const bullets = toAlert
         .map((item) => `• ${item.rttName} has 10%+ API failed`)
         .join("\n");
-      const message = `Target API Failure\n${bullets}`;
+      const message = `*Target API Failure*\n${bullets}`;
       console.log(message);
       if (!LOG_ONLY_MODE) {
         await sendSlackMessage(message);

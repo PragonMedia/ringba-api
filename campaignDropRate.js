@@ -321,7 +321,7 @@ async function runReport() {
 
   if (alerts.length > 0) {
     const bullets = alerts.map((line) => `• ${line}`).join("\n");
-    await sendSlackMessage(`Campaign Drop Rate\n${bullets}`);
+    await sendSlackMessage(`*Campaign Drop Rate*\n${bullets}`);
   }
 }
 

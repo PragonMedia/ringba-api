@@ -901,7 +901,7 @@ async function runReport() {
 
     if (alerts.length > 0) {
       const bullets = alerts.map((line) => `• ${line}`).join("\n");
-      await sendSlackMessage(`Consecutive Calls Same Bid\n${bullets}`);
+      await sendSlackMessage(`*Consecutive Calls Same Bid*\n${bullets}`);
     }
   } catch (error) {
     console.error("❌ Fatal error in runReport:", error.message || error);

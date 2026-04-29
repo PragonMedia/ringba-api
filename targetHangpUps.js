@@ -261,7 +261,7 @@ async function runReport() {
     const bullets = targetsToAlert
       .map((targetName) => `• ${targetName} has target hang-ups above 10%`)
       .join("\n");
-    const message = `Target hang-ups\n${bullets}`;
+    const message = `*Target hang-ups*\n${bullets}`;
     await sendSlackMessage(message);
   }
 }

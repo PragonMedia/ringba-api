@@ -461,7 +461,7 @@ async function sendReport() {
 
   if (alerts.length > 0) {
     const bullets = alerts.map((line) => `• ${line}`).join("\n");
-    await sendSlackMessage(`Publisher No TV Tags - Paragon Medicare\n${bullets}`);
+    await sendSlackMessage(`*Publisher No TV Tags - Paragon Medicare*\n${bullets}`);
   }
 }
 

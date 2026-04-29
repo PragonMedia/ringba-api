@@ -321,10 +321,10 @@ async function pullAndAlert() {
       .join("\n");
 
     if (LOG_ONLY_MODE) {
-      console.log(`Target Busy Call\n${bullets}`);
+      console.log(`*Target Busy Call*\n${bullets}`);
     } else if (SLACK_WEBHOOK_URL) {
       await sendSlackAlert({
-        text: `Target Busy Call\n${bullets}`,
+        text: `*Target Busy Call*\n${bullets}`,
         blocks: [
           {
             type: "section",
