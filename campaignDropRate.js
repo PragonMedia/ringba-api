@@ -292,6 +292,8 @@ async function runReport() {
     return;
   }
 
+  const alerts = [];
+
   for (const campaignName of campaignNames) {
     // CURRENT DATA
     const getTargetCurrent = await getData(
@@ -309,14 +311,17 @@ async function runReport() {
     ).toFixed(2);
 
     if (data.lastCallCount >= 10) {
-      await sendSlackMessage(
-        `${campaignName} has a ${compute}% drop rate in the last 30 minutes`,
-      );
+      alerts.push(`${campaignName} has a ${compute}% drop rate in the last 30 minutes`);
     } else {
       console.log(
         `[${campaignName}] Last call count is less than 10, skipping alert.`,
       );
     }
+  }
+
+  if (alerts.length > 0) {
+    const bullets = alerts.map((line) => `• ${line}`).join("\n");
+    await sendSlackMessage(`Campaign Drop Rate\n${bullets}`);
   }
 }
 

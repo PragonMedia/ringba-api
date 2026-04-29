@@ -384,6 +384,7 @@ function getCallCounts(data, tag) {
 // Send Report
 async function sendReport() {
   const allPublisherNames = [];
+  const alerts = [];
 
   // const token = await getAuthToken();
   // if (!token) {
@@ -450,15 +451,17 @@ async function sendReport() {
           cleanedData.callCountWithNoValue > 0.02 * cleanedData.lastCallCount &&
           cleanedData.lastCallCount >= 150
         ) {
-          // console.log(
-          //   `${medicareCampaign} | ${publisherName}'s ${tag.tagText} tag`,
-          // );
-          sendSlackMessage(
+          alerts.push(
             `${paragonCampaign} | ${publisherName} | Dialed Number Missing Tags`,
           );
         }
       }
     }
+  }
+
+  if (alerts.length > 0) {
+    const bullets = alerts.map((line) => `• ${line}`).join("\n");
+    await sendSlackMessage(`Publisher No TV Tags - Paragon Medicare\n${bullets}`);
   }
 }
 

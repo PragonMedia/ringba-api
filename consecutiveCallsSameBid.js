@@ -756,6 +756,7 @@ async function runReport() {
 
   const startTime = Date.now();
   console.log(`🚀 Starting report at ${new Date().toISOString()}`);
+  const alerts = [];
 
   // const token = await getAuthToken();
   // if (!token) return console.log("❌ Failed to retrieve token. Exiting.");
@@ -865,17 +866,12 @@ async function runReport() {
           }
 
           const targetName = group[0].targetName;
-          const messageLines = [
-            `\n${targetName} has dropped three consecutive calls on the same bid $${group[0].bidAmount}`,
-          ];
-          group.forEach((call) => {
-            messageLines.push(
-              `${call.inboundPhoneNumber} / ${call.inboundCallId}`,
-            );
-          });
-
-          console.log(messageLines.join("\n"));
-          sendSlackMessage(messageLines.join("\n"));
+          const details = group
+            .map((call) => `${call.inboundPhoneNumber} / ${call.inboundCallId}`)
+            .join(" | ");
+          const alertLine = `${targetName} has dropped three consecutive calls on the same bid $${group[0].bidAmount} (${details})`;
+          console.log(alertLine);
+          alerts.push(alertLine);
         }
 
         // Save cache after processing each target
@@ -902,6 +898,11 @@ async function runReport() {
         duration / 60,
       )} minutes)`,
     );
+
+    if (alerts.length > 0) {
+      const bullets = alerts.map((line) => `• ${line}`).join("\n");
+      await sendSlackMessage(`Consecutive Calls Same Bid\n${bullets}`);
+    }
   } catch (error) {
     console.error("❌ Fatal error in runReport:", error.message || error);
   } finally {

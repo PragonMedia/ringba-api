@@ -481,6 +481,7 @@ async function runReport() {
 
   const allTargets = await getAllTargets();
   if (!allTargets) return console.log("Problem fetching target list");
+  const alerts = [];
 
   for (const target of allTargets) {
     const allCallLogs = await getAllCallLogs(target);
@@ -506,16 +507,16 @@ async function runReport() {
       saveBatchCache();
 
       const targetName = group[0].targetName;
-      const messageLines = [
-        `\n${targetName} has dropped three consecutive calls`,
-      ];
-      group.forEach((call) => {
-        messageLines.push(`${call.inboundPhoneNumber} / ${call.inboundCallId}`);
-      });
-
-      // console.log(messageLines.join("\n"));
-      sendSlackMessage(messageLines.join("\n"));
+      const details = group
+        .map((call) => `${call.inboundPhoneNumber} / ${call.inboundCallId}`)
+        .join(" | ");
+      alerts.push(`${targetName} has dropped three consecutive calls (${details})`);
     }
+  }
+
+  if (alerts.length > 0) {
+    const bullets = alerts.map((line) => `• ${line}`).join("\n");
+    await sendSlackMessage(`Consecutive Calls\n${bullets}`);
   }
 }
 
