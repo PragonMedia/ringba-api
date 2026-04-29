@@ -1,0 +1,325 @@
+import "dotenv/config";
+import axios from "axios";
+
+const BASE_URL = "https://api.ringba.com/v2";
+const RINGBA_ACCOUNT_ID = process.env.RINGBA_ACCOUNT_ID;
+const USERNAME = process.env.RINGBA_USERNAME;
+const PASSWORD = process.env.RINGBA_PASSWORD;
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+const API_TOKEN = process.env.RINGBA_API_TOKEN;
+const VALUE_COLUMNS = [
+  { column: "callCount", aggregateFunction: null },
+  { column: "liveCallCount", aggregateFunction: null },
+  { column: "completedCalls", aggregateFunction: null },
+  { column: "endedCalls", aggregateFunction: null },
+  { column: "connectedCallCount", aggregateFunction: null },
+  { column: "payoutCount", aggregateFunction: null },
+  { column: "convertedCalls", aggregateFunction: null },
+  { column: "nonConnectedCallCount", aggregateFunction: null },
+  { column: "duplicateCalls", aggregateFunction: null },
+  { column: "blockedCalls", aggregateFunction: null },
+  { column: "incompleteCalls", aggregateFunction: null },
+  { column: "earningsPerCallGross", aggregateFunction: null },
+  { column: "conversionAmount", aggregateFunction: null },
+  { column: "payoutAmount", aggregateFunction: null },
+  { column: "profitGross", aggregateFunction: null },
+  { column: "profitMarginGross", aggregateFunction: null },
+  { column: "convertedPercent", aggregateFunction: null },
+  { column: "callLengthInSeconds", aggregateFunction: null },
+  { column: "avgHandleTime", aggregateFunction: null },
+  { column: "totalCost", aggregateFunction: null },
+];
+
+if (!SLACK_WEBHOOK_URL) {
+  console.warn("⚠️ SLACK_WEBHOOK_URL not set in .env — Slack alerts disabled.");
+}
+if (!RINGBA_ACCOUNT_ID || !API_TOKEN) {
+  console.warn(
+    "⚠️ RINGBA_ACCOUNT_ID or RINGBA_API_TOKEN not set — API calls may fail.",
+  );
+}
+
+async function sendSlackMessage(message) {
+  if (!SLACK_WEBHOOK_URL) {
+    console.warn("Slack skipped (no webhook):", message);
+    return;
+  }
+  try {
+    await axios.post(SLACK_WEBHOOK_URL, {
+      text: message,
+    });
+    console.log("Message sent to Slack:", message);
+  } catch (error) {
+    console.error(
+      "Error sending message to Slack:",
+      error.response?.data || error,
+    );
+  }
+}
+
+//  Function to Get Authentication Token
+async function getAuthToken() {
+  try {
+    const params = new URLSearchParams();
+    params.append("grant_type", "password");
+    params.append("username", USERNAME);
+    params.append("password", PASSWORD);
+
+    const response = await axios.post(`${BASE_URL}/token`, params, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+    });
+
+    return response.data.access_token;
+  } catch (error) {
+    console.error("Error getting token:", error.response?.data || error);
+    return null;
+  }
+}
+
+function getFormattedUTCDate(hours, minutes, seconds) {
+  const now = new Date();
+
+  // Set to fixed UTC 4:00 AM for the start time
+  const startDate = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      4,
+      0,
+      0,
+      0,
+    ),
+  );
+
+  // Set the end time to 3:59 AM UTC the next day
+  const endDate = new Date(startDate);
+  endDate.setUTCDate(startDate.getUTCDate() + 1); // Add 1 day for the end time
+  endDate.setUTCHours(3, 59, 59, 999); // Set time to 3:59 AM
+
+  // Return the formatted dates in ISO format
+  return {
+    reportStart: startDate.toISOString(),
+    reportEnd: endDate.toISOString(),
+  };
+}
+
+function getBaseFilters() {
+  return [
+    {
+      anyConditionToMatch: [
+        {
+          column: "tag:User:channel",
+          value: "TV",
+          isNegativeMatch: true,
+          comparisonType: "CONTAINS",
+        },
+      ],
+    },
+    {
+      anyConditionToMatch: [
+        {
+          column: "publisherName",
+          value: "Elite",
+          isNegativeMatch: true,
+          comparisonType: "EQUALS",
+        },
+      ],
+    },
+    {
+      anyConditionToMatch: [
+        {
+          column: "campaignName",
+          value: "Broker",
+          isNegativeMatch: true,
+          comparisonType: "CONTAINS",
+        },
+      ],
+    },
+    {
+      anyConditionToMatch: [
+        {
+          column: "isDuplicate",
+          value: "no",
+          isNegativeMatch: false,
+          comparisonType: "EQUALS",
+        },
+      ],
+    },
+  ];
+}
+
+function buildInsightsBody({
+  reportStart,
+  reportEnd,
+  groupByColumn,
+  groupByDisplayName,
+  campaignName = null,
+}) {
+  const filters = getBaseFilters();
+  if (campaignName) {
+    filters.unshift({
+      anyConditionToMatch: [
+        {
+          column: "campaignName",
+          value: campaignName,
+          isNegativeMatch: false,
+          comparisonType: "EQUALS",
+        },
+      ],
+    });
+  }
+
+  return {
+    reportStart,
+    reportEnd,
+    groupByColumns: [
+      {
+        column: groupByColumn,
+        displayName: groupByDisplayName,
+      },
+    ],
+    valueColumns: VALUE_COLUMNS,
+    orderByColumns: [
+      {
+        column: "callCount",
+        direction: "desc",
+      },
+    ],
+    formatTimespans: true,
+    formatPercentages: true,
+    generateRollups: true,
+    maxResultsPerGroup: 1000,
+    filters,
+    formatTimeZone: "America/New_York",
+  };
+}
+
+async function getCampaigns() {
+  try {
+    const { reportStart, reportEnd } = getFormattedUTCDate(4, 0, 0);
+    const response = await axios.post(
+      `${BASE_URL}/${RINGBA_ACCOUNT_ID}/insights`,
+      buildInsightsBody({
+        reportStart,
+        reportEnd,
+        groupByColumn: "campaignName",
+        groupByDisplayName: "Campaign",
+      }),
+      {
+        headers: {
+          Authorization: `Token ${API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const records = response.data?.report?.records || [];
+    return records;
+  } catch (error) {
+    console.error(
+      "🚨 Error fetching campaigns:",
+      error.response?.data || error,
+    );
+    return [];
+  }
+}
+
+function getParagonCampaignNames(campaignRecords) {
+  return campaignRecords
+    .map((record) => record.campaignName)
+    .filter(
+      (name) =>
+        typeof name === "string" && name.toLowerCase().includes("paragon"),
+    );
+}
+
+async function getNumberPoolData(campaignName) {
+  try {
+    const { reportStart, reportEnd } = getFormattedUTCDate(4, 0, 0);
+    const response = await axios.post(
+      `${BASE_URL}/${RINGBA_ACCOUNT_ID}/insights`,
+      buildInsightsBody({
+        reportStart,
+        reportEnd,
+        groupByColumn: "numberPoolName",
+        groupByDisplayName: "Number Pool",
+        campaignName,
+      }),
+      {
+        headers: {
+          Authorization: `Token ${API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const records = response.data?.report?.records || [];
+    return records;
+  } catch (error) {
+    console.error(
+      `🚨 Error fetching number pool data for campaign "${campaignName}":`,
+      error.response?.data || error,
+    );
+    return [];
+  }
+}
+
+// GENERIC FUNCTION TO GET OBJECTS TO USE FOR COMPARISSON
+function getCallCounts(data) {
+  let callCountWithNoValue = 0;
+  let lastCallCount = data[data.length - 1]?.callCount || null;
+  let hasTag = false;
+
+  for (let obj of data) {
+    if (obj.numberPoolName === "-no value-" || obj.numberPoolName === "") {
+      callCountWithNoValue = obj.callCount;
+      hasTag = true;
+      break;
+    }
+
+    if (!hasTag) {
+      let callCountWithNoValue = 0;
+    }
+  }
+
+  return { callCountWithNoValue, lastCallCount };
+}
+
+async function runReport() {
+  const campaignRecords = await getCampaigns();
+  if (!campaignRecords.length) {
+    console.log("No campaigns pulled from API");
+    return;
+  }
+
+  const paragonCampaigns = getParagonCampaignNames(campaignRecords);
+  if (!paragonCampaigns.length) {
+    console.log('No campaigns matched filter "Paragon".');
+    return;
+  }
+
+  console.log("Matched campaigns:", paragonCampaigns);
+
+  for (const campaignName of paragonCampaigns) {
+    const numberPool = await getNumberPoolData(campaignName);
+    const cleanNumberPoolData = getCallCounts(numberPool);
+
+    console.log(`[${campaignName}] Number pool records:`, numberPool.length);
+    console.log(`[${campaignName}] Metrics:`, cleanNumberPoolData);
+
+    if (
+      cleanNumberPoolData.lastCallCount &&
+      cleanNumberPoolData.callCountWithNoValue >
+        0.02 * cleanNumberPoolData.lastCallCount
+    ) {
+      await sendSlackMessage(
+        `${campaignName} Number pool no value is above 2%`,
+      );
+    }
+  }
+}
+
+runReport();
