@@ -399,19 +399,23 @@ async function sendReport() {
   }
 
   // Filter Campaign
-  const medicareCampaigns = campaignName.filter(
-    (curr) =>
-      typeof curr === "string" &&
-      curr.includes("Medicare") &&
-      !curr.includes("Broker") &&
-      !curr.includes("Testing"),
-  );
+  const paragonCampaigns = campaignName.filter((curr) => {
+    if (typeof curr !== "string") return false;
+    const lower = curr.toLowerCase();
+    return (
+      lower.includes("paragon") &&
+      !lower.includes("broker") &&
+      !lower.includes("testing") &&
+      !lower.includes("elite") &&
+      !lower.includes("tv")
+    );
+  });
 
-  if (medicareCampaigns.length === 0) return;
+  if (paragonCampaigns.length === 0) return;
 
-  for (const medicareCampaign of medicareCampaigns) {
+  for (const paragonCampaign of paragonCampaigns) {
     // Get Publisher
-    const publishers = await getPublishers(medicareCampaign);
+    const publishers = await getPublishers(paragonCampaign);
     if (!Array.isArray(publishers) || publishers.length === 0) {
       console.log("No campaign found");
       continue;
@@ -427,7 +431,7 @@ async function sendReport() {
       // Loop through Tags Array
       for (const tag of tags) {
         const getData = await getPublisherTag(
-          medicareCampaign,
+          paragonCampaign,
           publisherName,
           tag.tag,
           tag.tagName,
@@ -439,7 +443,7 @@ async function sendReport() {
         if (cleanedData.lastCallCount >= 150) {
         } else {
           console.log(
-            `${medicareCampaign} | ${publisherName} |  ${tag.tagText} | ${cleanedData.lastCallCount} is below 150`,
+            `${paragonCampaign} | ${publisherName} |  ${tag.tagText} | ${cleanedData.lastCallCount} is below 150`,
           );
         }
         if (
@@ -450,7 +454,7 @@ async function sendReport() {
           //   `${medicareCampaign} | ${publisherName}'s ${tag.tagText} tag`,
           // );
           sendSlackMessage(
-            `${medicareCampaign} | ${publisherName} |  ${tag.tagText}'s tag `,
+            `${paragonCampaign} | ${publisherName} | Dialed Number Missing Tags`,
           );
         }
       }

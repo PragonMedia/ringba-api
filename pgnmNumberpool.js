@@ -34,7 +34,9 @@ if (!SLACK_WEBHOOK_URL) {
   console.warn("⚠️ SLACK_WEBHOOK_URL not set in .env — Slack alerts disabled.");
 }
 if (!RINGBA_ACCOUNT_ID || !API_TOKEN) {
-  console.warn("⚠️ RINGBA_ACCOUNT_ID or RINGBA_API_TOKEN not set — API calls may fail.");
+  console.warn(
+    "⚠️ RINGBA_ACCOUNT_ID or RINGBA_API_TOKEN not set — API calls may fail.",
+  );
 }
 
 async function sendSlackMessage(message) {
@@ -88,8 +90,8 @@ function getFormattedUTCDate(hours, minutes, seconds) {
       4,
       0,
       0,
-      0
-    )
+      0,
+    ),
   );
 
   // Set the end time to 3:59 AM UTC the next day
@@ -211,7 +213,7 @@ async function getCampaigns() {
           Authorization: `Token ${API_TOKEN}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     const records = response.data?.report?.records || [];
@@ -219,7 +221,7 @@ async function getCampaigns() {
   } catch (error) {
     console.error(
       "🚨 Error fetching campaigns:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     return [];
   }
@@ -228,7 +230,10 @@ async function getCampaigns() {
 function getParagonCampaignNames(campaignRecords) {
   return campaignRecords
     .map((record) => record.campaignName)
-    .filter((name) => typeof name === "string" && name.toLowerCase().includes("paragon"));
+    .filter(
+      (name) =>
+        typeof name === "string" && name.toLowerCase().includes("paragon"),
+    );
 }
 
 async function getNumberPoolData(campaignName) {
@@ -248,7 +253,7 @@ async function getNumberPoolData(campaignName) {
           Authorization: `Token ${API_TOKEN}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     const records = response.data?.report?.records || [];
@@ -256,7 +261,7 @@ async function getNumberPoolData(campaignName) {
   } catch (error) {
     console.error(
       `🚨 Error fetching number pool data for campaign "${campaignName}":`,
-      error.response?.data || error
+      error.response?.data || error,
     );
     return [];
   }
@@ -311,7 +316,7 @@ async function runReport() {
         0.02 * cleanNumberPoolData.lastCallCount
     ) {
       await sendSlackMessage(
-        `${campaignName} number pool no value is above 2%`
+        `${campaignName} Number pool no value is above 2%`,
       );
     }
   }

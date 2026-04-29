@@ -71,10 +71,23 @@ export default [
     description: "Campaign drop rate — every 10 min, 9am–5pm EST (Mon–Sat)",
   },
   {
-    script: "ringTreeDisposition.js",
+    script: "targetPingTimeout.js",
     schedule: "0,15,30,45 9-18 * * 1-6",
     timezone: "America/New_York",
     description: "Ring tree disposition — every 15 min, 9am–6pm EST (Mon–Sat)",
+  },
+  {
+    script: "targetApiFailure.js",
+    schedule: "0,15,30,45 9-18 * * 1-6",
+    timezone: "America/New_York",
+    description: "Target API failure — every 15 min, 9am–6pm EST (Mon–Sat)",
+  },
+  {
+    script: "targetBusyCall.js",
+    args: ["pull"],
+    schedule: "*/10 9-17 * * 1-6",
+    timezone: "America/New_York",
+    description: "Target busy call — every 10 min, 9am–5pm EST (Mon–Sat)",
   },
   // Add your 5 more APIs here with their schedules
   // { script: "myScript.js", schedule: "0 */2 * * *", timezone: "America/New_York", description: "Every 2 hours" },

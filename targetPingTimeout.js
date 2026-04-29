@@ -94,9 +94,9 @@ function cleanRttItem(item) {
 }
 
 const ACCEPTANCE_REJECTION_THRESHOLD = 300;
-const PING_TIMEOUT_PCT_THRESHOLD = 0.15; // 15%
+const PING_TIMEOUT_PCT_THRESHOLD = 0.1; // 10%
 
-/** Clean full API response: acceptanceRejection > 300 and pingTimeout/acceptanceRejection > 15% */
+/** Clean full API response: acceptanceRejection > 300 and pingTimeout/acceptanceRejection > 10% */
 function cleanRingTreeData(data) {
   const rawValues = data?.values ?? [];
   return rawValues
@@ -131,13 +131,20 @@ async function fetchRingTreeDisposition() {
     const cleaned = cleanRingTreeData(data);
     const alreadyAlerted = new Set(cache.rttNames);
 
-    for (const item of cleaned) {
-      if (alreadyAlerted.has(item.rttName)) continue;
-      const message = `${item.rttName} has 15%+ ping timouts`;
+    const toAlert = cleaned.filter((item) => !alreadyAlerted.has(item.rttName));
+
+    if (toAlert.length > 0) {
+      const bullets = toAlert
+        .map((item) => `• ${item.rttName} has 10%+ ping timeouts`)
+        .join("\n");
+      const message = `Target Ping Timeout\n${bullets}`;
       console.log(message);
       await sendSlackMessage(message);
-      cache.rttNames.push(item.rttName);
-      alreadyAlerted.add(item.rttName);
+
+      for (const item of toAlert) {
+        cache.rttNames.push(item.rttName);
+        alreadyAlerted.add(item.rttName);
+      }
     }
     if (cache.rttNames.length > 0) saveAlertedRttNames(cache);
 

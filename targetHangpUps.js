@@ -239,6 +239,8 @@ async function runReport() {
   if (!allTargetsDropCalls)
     return console.log("Problem fetching target list drop calls");
 
+  const targetsToAlert = [];
+
   // compute
   allTargets.forEach((currA) => {
     const targetName = currA.targetName || "undefined";
@@ -251,10 +253,17 @@ async function runReport() {
 
     // console.log(`${targetName} || ${callCountA} || ${callCountB}`);
     if (callCountB > 0.1 * callCountA) {
-      // console.log(`${targetName} has target hang-ups above 10%`);
-      sendSlackMessage(`${targetName} has target hang-ups above 10%`);
+      targetsToAlert.push(targetName);
     }
   });
+
+  if (targetsToAlert.length > 0) {
+    const bullets = targetsToAlert
+      .map((targetName) => `• ${targetName} has target hang-ups above 10%`)
+      .join("\n");
+    const message = `Target hang-ups\n${bullets}`;
+    await sendSlackMessage(message);
+  }
 }
 
 runReport();
