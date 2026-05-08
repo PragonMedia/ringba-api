@@ -302,7 +302,9 @@ async function pullAndAlert() {
   const todayCache = cache[today] || {};
 
   const toAlert = highNoAnswer.filter((t) => {
-    const lastDialed = todayCache[t.targetName] ?? 0;
+    const normalizedName = typeof t.targetName === "string" ? t.targetName.trim() : "";
+    if (!normalizedName || normalizedName.toLowerCase() === "undefined") return false;
+    const lastDialed = todayCache[normalizedName] ?? 0;
     const minRequired = lastDialed + MIN_CALLS_SINCE_LAST_ALERT;
     return t.targetDialed >= minRequired;
   });
@@ -328,7 +330,9 @@ async function pullAndAlert() {
       ],
     });
     for (const t of toAlert) {
-      todayCache[t.targetName] = t.targetDialed;
+      const normalizedName = typeof t.targetName === "string" ? t.targetName.trim() : "";
+      if (!normalizedName || normalizedName.toLowerCase() === "undefined") continue;
+      todayCache[normalizedName] = t.targetDialed;
     }
     cache[today] = todayCache;
     saveAlertCache(cache);

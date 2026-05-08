@@ -33,6 +33,7 @@ const cacheFiles = [
   { path: resolve(__dirname, "alertCache.json"), data: { [today]: [] } },
   { path: resolve(__dirname, "api10Cache.json"), data: { [today]: [] } },
   { path: resolve(__dirname, "ringTreeDispositionCache.json"), data: { date: today, rttNames: [] } },
+  { path: resolve(__dirname, "targetHangUpsCache.json"), data: { date: today, targetNames: [] } },
 ];
 
 for (const { path: filePath, data } of cacheFiles) {
