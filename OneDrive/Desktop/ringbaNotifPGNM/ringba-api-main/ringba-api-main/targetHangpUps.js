@@ -13,9 +13,15 @@ const PASSWORD = process.env.RINGBA_PASSWORD;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 const API_TOKEN = process.env.RINGBA_API_TOKEN;
 
-function getTodayEST() {
+/** Today as YYYY-MM-DD in America/New_York — cache date key (same pattern as targetPingTimeout.js) */
+function getTodayESTDate() {
   const now = new Date();
-  const fmt = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" });
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
   const parts = fmt.formatToParts(now);
   const y = parts.find((p) => p.type === "year").value;
   const m = parts.find((p) => p.type === "month").value;
@@ -23,40 +29,40 @@ function getTodayEST() {
   return `${y}-${m}-${d}`;
 }
 
-// FOR DUPLICATE NOTIFS (date = EST so 1am clear matches)
-const ALERT_CACHE_PATH = join(__dirname, "api10Cache.json");
+const CACHE_PATH = join(__dirname, "targetHangUpsCache.json");
 
-// Load alert cache from file or initialize
-let alertCache = {};
-if (existsSync(ALERT_CACHE_PATH)) {
-  alertCache = JSON.parse(readFileSync(ALERT_CACHE_PATH, "utf-8"));
+function loadAlertedTargetNames() {
+  const today = getTodayESTDate();
+  let cache = { date: today, targetNames: [] };
+  if (existsSync(CACHE_PATH)) {
+    try {
+      const data = JSON.parse(readFileSync(CACHE_PATH, "utf-8"));
+      if (data.date === today && Array.isArray(data.targetNames)) cache = data;
+    } catch (e) {
+      console.warn("⚠️ Failed to load target hang-ups cache. Starting fresh.");
+    }
+  }
+  return cache;
 }
 
-const today = getTodayEST();
-
-// Ensure structure
-if (!alertCache[today]) {
-  alertCache = { [today]: [] }; // Reset for today
+function saveAlertedTargetNames(cache) {
+  try {
+    writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 2));
+  } catch (e) {
+    console.error("❌ Failed to save target hang-ups cache:", e.message);
+  }
 }
 
-// ✅ Function to send a message to Slack
 async function sendSlackMessage(message) {
-  // Check if already alerted today
-  if (alertCache[today]?.includes(message)) {
-    console.log("🛑 Duplicate alert skipped:", message);
+  if (!SLACK_WEBHOOK_URL) {
+    console.warn("Slack skipped (no webhook):", message);
     return;
   }
-
   try {
     await axios.post(SLACK_WEBHOOK_URL, {
       text: message,
     });
-
     console.log("✅ Message sent to Slack:", message);
-
-    // Save alert to cache
-    alertCache[today].push(message);
-    writeFileSync(ALERT_CACHE_PATH, JSON.stringify(alertCache, null, 2));
   } catch (error) {
     console.error(
       "❌ Error sending message to Slack:",
@@ -239,7 +245,7 @@ async function runReport() {
   if (!allTargetsDropCalls)
     return console.log("Problem fetching target list drop calls");
 
-  const targetsToAlert = [];
+  const qualifyingSet = new Set();
 
   // compute
   allTargets.forEach((currA) => {
@@ -253,17 +259,30 @@ async function runReport() {
 
     // console.log(`${targetName} || ${callCountA} || ${callCountB}`);
     if (callCountB > 0.1 * callCountA) {
-      targetsToAlert.push(targetName);
+      qualifyingSet.add(targetName);
     }
   });
 
-  if (targetsToAlert.length > 0) {
-    const bullets = targetsToAlert
+  const qualifyingTargetNames = [...qualifyingSet];
+
+  const cache = loadAlertedTargetNames();
+  const alreadyAlerted = new Set(cache.targetNames);
+  const toAlert = qualifyingTargetNames.filter((name) => !alreadyAlerted.has(name));
+
+  if (toAlert.length > 0) {
+    const bullets = toAlert
       .map((targetName) => `• ${targetName} has target hang-ups above 10%`)
       .join("\n");
-    const message = `Target hang-ups\n${bullets}`;
+    const message = `*Target hang-ups*\n${bullets}`;
     await sendSlackMessage(message);
+
+    for (const name of toAlert) {
+      cache.targetNames.push(name);
+      alreadyAlerted.add(name);
+    }
   }
+
+  if (cache.targetNames.length > 0) saveAlertedTargetNames(cache);
 }
 
 runReport();

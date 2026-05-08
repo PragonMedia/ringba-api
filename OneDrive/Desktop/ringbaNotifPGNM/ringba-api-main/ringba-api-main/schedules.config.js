@@ -89,6 +89,13 @@ export default [
     timezone: "America/New_York",
     description: "Target busy call — every 10 min, 9am–5pm EST (Mon–Sat)",
   },
+  {
+    script: "eliteNumberBlocker.js",
+    schedule: "0 23 * * *",
+    timezone: "America/New_York",
+    description:
+      "Elite number blocker — daily 11pm Eastern (calllogs → inboundPhoneNumber audit; block ≥5 hits TBD)",
+  },
   // Add your 5 more APIs here with their schedules
   // { script: "myScript.js", schedule: "0 */2 * * *", timezone: "America/New_York", description: "Every 2 hours" },
 ];
