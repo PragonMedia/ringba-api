@@ -1,3 +1,6 @@
+# Never commit Windows user profile / OneDrive paths (repo was wrongly rooted at ~)
+OneDrive/
+
 node_modules/
 .env
 *.log
