@@ -90,6 +90,13 @@ export default [
     description: "Target busy call — every 10 min, 9am–5pm EST (Mon–Sat)",
   },
   {
+    script: "webHook.js",
+    schedule: "*/5 9-18 * * 1-6",
+    timezone: "America/New_York",
+    description:
+      "Webhook conversion check — every 5 min, 9am–6pm EST (Mon–Sat)",
+  },
+  {
     script: "eliteNumberBlocker.js",
     schedule: "0 23 * * *",
     timezone: "America/New_York",
