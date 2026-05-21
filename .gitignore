@@ -6,6 +6,7 @@ processedBatches.json
 processedBatchesSameBid.json
 processedBidBatches.json
 alertCache.json
+webHookAlertCache.json
 api10Cache.json
 *.lock
 .api7r2v1.lock
