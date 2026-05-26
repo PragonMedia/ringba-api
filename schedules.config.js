@@ -24,9 +24,9 @@ export default [
   },
   {
     script: "multiTags.js",
-    schedule: "0 9,11,13,15,17 * * 1-6",
+    schedule: "0 10-18 * * 1-6",
     timezone: "America/New_York",
-    description: "Multi tags — every 2 hrs, 9am–5pm EST (Mon–Sat)",
+    description: "Multi tags — every 1 hr, 10am–6pm EST (Mon–Sat)",
   },
   {
     script: "pgnmNumberpool.js",

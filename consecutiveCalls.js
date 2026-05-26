@@ -459,7 +459,7 @@ function groupDropBatchByTargetStrict(batch) {
     const aTime = normalizeDuration(a.callLengthInSeconds);
     const bTime = normalizeDuration(b.callLengthInSeconds);
     const cTime = normalizeDuration(c.callLengthInSeconds);
-    const allShort = aTime <= 20 && bTime <= 20 && cTime <= 20;
+    const allShort = aTime <= 25 && bTime <= 25 && cTime <= 25;
 
     if (unused && allShort && allHaveTargetEnd) {
       result.push([a, b, c]);

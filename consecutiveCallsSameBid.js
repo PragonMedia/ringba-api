@@ -707,9 +707,9 @@ function groupDropBatchByTargetStrict(batch) {
       aTime != null &&
       bTime != null &&
       cTime != null &&
-      aTime <= 20 &&
-      bTime <= 20 &&
-      cTime <= 20;
+      aTime <= 25 &&
+      bTime <= 25 &&
+      cTime <= 25;
 
     const sameTarget =
       a.targetName &&
