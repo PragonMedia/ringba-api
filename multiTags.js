@@ -1,10 +1,15 @@
 import "dotenv/config";
 import axios from "axios";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 const BASE_URL = "https://api.ringba.com/v2";
 const RINGBA_ACCOUNT_ID = process.env.RINGBA_ACCOUNT_ID;
 const API_TOKEN = process.env.RINGBA_API_TOKEN;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ALERT_CACHE_PATH = join(__dirname, "multiTagsAlertCache.json");
 
 function getReportWindow() {
   const now = new Date();
@@ -294,6 +299,49 @@ async function sendSlackMessage(message) {
 
 const REQUIRED_TAGS = ["channel", "angle", "qualified", "age"];
 
+function getTodayEST() {
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const parts = fmt.formatToParts(now);
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value;
+  const d = parts.find((p) => p.type === "day").value;
+  return `${y}-${m}-${d}`;
+}
+
+function loadAlertCache() {
+  const today = getTodayEST();
+  const empty = { date: today, alerts: [] };
+
+  if (!existsSync(ALERT_CACHE_PATH)) {
+    return empty;
+  }
+
+  try {
+    const cache = JSON.parse(readFileSync(ALERT_CACHE_PATH, "utf-8"));
+    if (cache?.date === today && Array.isArray(cache.alerts)) {
+      return { date: today, alerts: [...new Set(cache.alerts)] };
+    }
+  } catch (error) {
+    console.warn("Failed to read multiTags alert cache. Starting fresh.");
+  }
+
+  return empty;
+}
+
+function saveAlertCache(cache) {
+  try {
+    writeFileSync(ALERT_CACHE_PATH, JSON.stringify(cache, null, 2));
+  } catch (error) {
+    console.error("Failed to save multiTags alert cache:", error.message);
+  }
+}
+
 function findMissingTags(detailRecord) {
   const messageTags = detailRecord?.["message-tags"] ?? [];
   const presentNames = new Set(
@@ -341,6 +389,8 @@ async function run() {
 
   const callLookup = buildCallLookup(calls);
   const alerts = [];
+  const alertCache = loadAlertCache();
+  const sentToday = new Set(alertCache.alerts);
 
   for (const detail of details) {
     const callId = detail.inboundCallId;
@@ -357,14 +407,22 @@ async function run() {
       original.publisherName,
       missingTags,
     );
-    alerts.push(message);
+    if (!sentToday.has(message)) {
+      alerts.push(message);
+    }
   }
 
-  console.log(`Alerts to send: ${alerts.length}`);
+  console.log(`Alerts to send (new only): ${alerts.length}`);
 
   if (alerts.length > 0) {
     const bullets = alerts.map((line) => `• ${line}`).join("\n");
     await sendSlackMessage(`*Multi Tags*\n${bullets}`);
+
+    for (const alert of alerts) {
+      sentToday.add(alert);
+    }
+    alertCache.alerts = Array.from(sentToday);
+    saveAlertCache(alertCache);
   }
 }
 
