@@ -11,7 +11,8 @@ const CALL_THRESHOLD = 5;
 const BLOCK_WHEN_CALLS_GREATER_THAN = CALL_THRESHOLD;
 const PAGE_SIZE = 200;
 const MAX_ROWS = 20_000;
-const DRY_RUN = String(process.env.NUMBER_BLOCKER_DRY_RUN || "").toLowerCase() === "true";
+const DRY_RUN =
+  String(process.env.NUMBER_BLOCKER_DRY_RUN || "").toLowerCase() === "true";
 
 const CALLLOGS_VALUE_COLUMNS = [
   { column: "campaignName" },
@@ -59,9 +60,7 @@ function getPreviousEasternHourWindowUTC() {
   const eastNow = new Date(
     now.toLocaleString("en-US", { timeZone: "America/New_York" }),
   );
-  const utcNow = new Date(
-    now.toLocaleString("en-US", { timeZone: "UTC" }),
-  );
+  const utcNow = new Date(now.toLocaleString("en-US", { timeZone: "UTC" }));
   const tzOffsetMs = utcNow.getTime() - eastNow.getTime();
 
   const startEastern = new Date(
@@ -213,10 +212,13 @@ function getBlockCandidates(counts) {
 async function fetchBlockedNumbers(token) {
   let response;
   try {
-    response = await axios.get(`${BASE_URL}/${RINGBA_ACCOUNT_ID}/blockedNumbers`, {
-      headers: ringbaAuthHeaders(token),
-      timeout: 20_000,
-    });
+    response = await axios.get(
+      `${BASE_URL}/${RINGBA_ACCOUNT_ID}/blockedNumbers`,
+      {
+        headers: ringbaAuthHeaders(token),
+        timeout: 20_000,
+      },
+    );
   } catch (error) {
     console.warn(
       "⚠️ Could not fetch blockedNumbers list; continuing without pre-check.",

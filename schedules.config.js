@@ -103,6 +103,13 @@ export default [
     description:
       "Elite number blocker — daily 11pm Eastern (calllogs → inboundPhoneNumber audit; block ≥5 hits TBD)",
   },
+  {
+    script: "numberBlocker.js",
+    schedule: "0 10-18 * * 1-6",
+    timezone: "America/New_York",
+    description:
+      "Number blocker — hourly 10am–6pm Eastern (calllogs hourly window; block callers with >5 calls)",
+  },
   // Add your 5 more APIs here with their schedules
   // { script: "myScript.js", schedule: "0 */2 * * *", timezone: "America/New_York", description: "Every 2 hours" },
 ];
