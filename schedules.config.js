@@ -105,10 +105,10 @@ export default [
   },
   {
     script: "numberBlocker.js",
-    schedule: "0 10-18 * * 1-6",
+    schedule: "5-55/5 9-18 * * 1-6",
     timezone: "America/New_York",
     description:
-      "Number blocker — hourly 10am–6pm Eastern (calllogs hourly window; block callers with >5 calls)",
+      "Number blocker — every 5 min from 9:05am–6:55pm Eastern (always checks current hour calllogs; block callers with >5 calls)",
   },
   // Add your 5 more APIs here with their schedules
   // { script: "myScript.js", schedule: "0 */2 * * *", timezone: "America/New_York", description: "Every 2 hours" },

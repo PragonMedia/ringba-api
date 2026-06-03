@@ -31,10 +31,11 @@ if (!API_TOKEN && (!USERNAME || !PASSWORD)) {
 }
 
 /**
- * Previous full hour in Eastern time, represented as UTC ISO strings.
- * Example run at 11:00 ET => 10:00:00.000 ET to 10:59:59.999 ET.
+ * Current calendar hour in Eastern time, as UTC ISO strings.
+ * Example: run at 9:25 ET => 9:00:00.000 ET to 9:59:59.999 ET (9am–10am window).
+ * Example: run at 3:45 ET => 3:00:00.000 ET to 3:59:59.999 ET (3pm–4pm window).
  */
-function getPreviousEasternHourWindowUTC() {
+function getCurrentEasternHourWindowUTC() {
   const now = new Date();
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/New_York",
@@ -54,21 +55,14 @@ function getPreviousEasternHourWindowUTC() {
   const month = Number(values.month);
   const day = Number(values.day);
   const hour = Number(values.hour);
-  const previousHour = (hour + 23) % 24;
 
-  // Use America/New_York offset from current date; works for scheduler hourly runs.
   const eastNow = new Date(
     now.toLocaleString("en-US", { timeZone: "America/New_York" }),
   );
   const utcNow = new Date(now.toLocaleString("en-US", { timeZone: "UTC" }));
   const tzOffsetMs = utcNow.getTime() - eastNow.getTime();
 
-  const startEastern = new Date(
-    Date.UTC(year, month - 1, day, previousHour, 0, 0, 0),
-  );
-  if (previousHour > hour) {
-    startEastern.setUTCDate(startEastern.getUTCDate() - 1);
-  }
+  const startEastern = new Date(Date.UTC(year, month - 1, day, hour, 0, 0, 0));
   const endEastern = new Date(startEastern);
   endEastern.setUTCMinutes(59, 59, 999);
 
@@ -159,7 +153,7 @@ async function postCalllogsPage(token, reportStart, reportEnd, offset, size) {
 async function fetchHourlyCalllogs(token, options = {}) {
   const pageSize = options.pageSize ?? PAGE_SIZE;
   const maxRows = options.maxRows ?? MAX_ROWS;
-  const { reportStart, reportEnd } = getPreviousEasternHourWindowUTC();
+  const { reportStart, reportEnd } = getCurrentEasternHourWindowUTC();
 
   const records = [];
   let offset = 0;
@@ -317,7 +311,7 @@ async function run() {
     }
   }
 
-  console.log("numberBlocker — report window (previous EST hour):");
+  console.log("numberBlocker — report window (current EST hour):");
   console.log(" ", reportStart, "→", reportEnd);
   console.log("calllogs rows fetched:", records.length);
   console.log("unique inboundPhoneNumber count:", counts.size);
@@ -353,6 +347,6 @@ export {
   getAuthorizationToken,
   getAuthToken,
   getBlockCandidates,
-  getPreviousEasternHourWindowUTC,
+  getCurrentEasternHourWindowUTC,
   ringbaAuthHeaders,
 };
