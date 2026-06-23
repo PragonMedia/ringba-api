@@ -88,6 +88,16 @@ function buildCalllogsBody(reportStart, reportEnd, offset, size) {
           },
         ],
       },
+      {
+        anyConditionToMatch: [
+          {
+            column: "campaignName",
+            value: "Medicare - OB",
+            isNegativeMatch: true,
+            comparisonType: "EQUALS",
+          },
+        ],
+      },
     ],
     valueColumns: CALLLOGS_VALUE_COLUMNS,
     formatTimespans: true,
