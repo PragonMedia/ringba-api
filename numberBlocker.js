@@ -81,17 +81,17 @@ function buildCalllogsBody(reportStart, reportEnd, offset, size) {
       {
         anyConditionToMatch: [
           {
-            column: "campaignName",
-            value: "Medicaid",
+            column: "tag:Campaign:Name",
+            value: "Paragon - Medicaid",
             isNegativeMatch: true,
-            comparisonType: "CONTAINS",
+            comparisonType: "EQUALS",
           },
         ],
       },
       {
         anyConditionToMatch: [
           {
-            column: "campaignName",
+            column: "tag:Campaign:Name",
             value: "Medicare - OB",
             isNegativeMatch: true,
             comparisonType: "EQUALS",
